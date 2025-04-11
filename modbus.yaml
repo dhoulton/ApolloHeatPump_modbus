@@ -1,0 +1,625 @@
+# modbus config for Apollo Air/Water Heat Pump with Carel controller
+- name: Apollo
+  type: tcp
+  host: 10.X.X.X <-- Set this to the IP of your EW11 device
+  port: 502
+  delay: 2
+  timeout: 2
+  message_wait_milliseconds: 50
+
+  ##############################################
+  # Coil registers - 1 bit, read/write - 00000
+  # ############################################
+  switches:
+    #
+    # Heat Pump On/Off
+    #
+    - name: "Apollo Heat Pump On/Off"
+      unique_id: "apollo.switch.system_on-off"
+      write_type: coil
+      verify:
+        delay: 1
+      slave: 1
+      address: 40
+
+    #
+    # Defrost Function On/Off
+    #
+    - name: "Apollo Heat Pump Defrost Switch"
+      unique_id: "apollo.switch.defrost"
+      write_type: coil
+      verify:
+        delay: 1
+      slave: 1
+      address: 36
+
+    #
+    # Electric Crank/Chassis Heaters On/Off
+    #
+    - name: "Apollo Heat Pump Crank/Chassis Heaters Switch"
+      unique_id: "apollo.switch.electric_heaters"
+      # scan_interval: 30
+      write_type: coil
+      verify:
+        delay: 1
+      slave: 1
+      address: 1
+
+    #
+    # Low-Temp Electrical Aux Heat On/Off
+    #
+    - name: "Apollo Heat Pump Aux Heat Switch"
+      unique_id: "apollo.switch.low_temp_aux_heat"
+      write_type: holding
+      command_on: 3
+      command_off: 0
+      verify:
+        delay: 1
+        state_off: 0
+        state_on: [1, 2, 3]
+      slave: 1
+      address: 323
+
+      #
+      # Power-On Auto-start switch
+      #
+    - name: "Apollo Heat Pump Power-On Start Switch"
+      unique_id: "apollo.switch.power-on_start"
+      write_type: coil
+      verify:
+        delay: 1
+      slave: 1
+      address: 2
+
+      #
+      # Timed On/Off (aka Timezone) Switch
+      #
+    - name: "Apollo Heat Pump Timed On/Off Switch"
+      unique_id: "apollo.switch.timed_on-off"
+      write_type: coil
+      verify:
+        delay: 1
+      slave: 1
+      address: 38
+
+      #
+      # Ambient Temp Mode Switch
+      #
+    - name: "Apollo Heat Pump Ambient Temp Mode Switch"
+      unique_id: "apollo.switch.ambient_mode_select"
+      write_type: coil
+      verify:
+        delay: 1
+      slave: 1
+      address: 52
+
+    #
+    # Antifreeze Protection Switches
+    #
+    - name: "Apollo Heat Pump Antifreeze Level 1"
+      unique_id: "apollo.switch.antifreeze_lvl_1"
+      write_type: coil
+      verify:
+        delay: 1
+      slave: 1
+      address: 53
+
+    - name: "Apollo Heat Pump Antifreeze Level 2"
+      unique_id: "apollo.switch.antifreeze_lvl_2"
+      write_type: coil
+      verify:
+        delay: 1
+      slave: 1
+      address: 54
+
+  # ###############################################
+  # Discrete registers - 1 bit, read only - 1XXXX
+  # ###############################################
+  binary_sensors:
+    #
+    # Unit On/Off
+    #
+    - name: "Apollo Heat Pump Status - HP On/Off"
+      unique_id: "apollo.status.system_on-off"
+      scan_interval: 15
+      input_type: discrete_input
+      slave: 1
+      address: 0
+
+      #
+      # Water Flow Sensor
+      #
+    - name: "Apollo Heat Pump Status - Water Flow (ID1) (Inverted)"
+      unique_id: "apollo.status.water_flow"
+      scan_interval: 15
+      input_type: discrete_input
+      slave: 1
+      address: 1
+
+      #
+      # 4-way Valve Status (detect defrost cycle)
+      #
+    - name: "Apollo Heat Pump Status - Defrost Active (4WV) (D03)"
+      unique_id: "apollo.status.4-way-valve_d03"
+      scan_interval: 15
+      input_type: discrete_input
+      slave: 1
+      address: 7
+
+      #
+      # Water Pump Status
+      #
+    - name: "Apollo Heat Pump Status - Water Pump (D04)"
+      unique_id: "apollo.status.water_pump_d04"
+      scan_interval: 15
+      input_type: discrete_input
+      slave: 1
+      address: 8
+
+      #
+      # Crankshaft Heating Status
+      #
+    - name: "Apollo Heat Pump Status - Crankshaft Heat On (D06)"
+      unique_id: "apollo.status.crank_heat_d06"
+      scan_interval: 15
+      input_type: discrete_input
+      slave: 1
+      address: 10
+
+      #
+      # Chassis Heating Status
+      #
+    - name: "Apollo Heat Pump Status - Chassis Heat On (D07)"
+      unique_id: "apollo.status.chassis_heat_d07"
+      scan_interval: 15
+      input_type: discrete_input
+      slave: 1
+      address: 11
+
+      #
+      # Aux Heating Status (Cold Temps Supplemental Heat)
+      #
+    - name: "Apollo Heat Pump Status - Aux Heat On (D09)"
+      unique_id: "apollo.status.aux_heat_d09"
+      scan_interval: 15
+      input_type: discrete_input
+      slave: 1
+      address: 12
+
+      #
+      # Other IDx Status
+      #
+    - name: "Apollo Heat Pump Status - Emergency (ID2)"
+      unique_id: "apollo.status.emergency_id2"
+      scan_interval: 15
+      input_type: discrete_input
+      slave: 1
+      address: 2
+
+    - name: "Apollo Heat Pump Status - End Signal (ID3)"
+      unique_id: "apollo.status.end_id3"
+      scan_interval: 15
+      input_type: discrete_input
+      slave: 1
+      address: 3
+
+    - name: "Apollo Heat Pump Status - Phase Seq Prot (ID5)"
+      unique_id: "apollo.status.phase_seq_id5"
+      scan_interval: 15
+      input_type: discrete_input
+      slave: 1
+      address: 4
+
+      #
+      # Other Dxx Status
+      #
+    - name: "Apollo Heat Pump Status - Noble Character (D01)"
+      unique_id: "apollo.status.noble_d01"
+      scan_interval: 15
+      input_type: discrete_input
+      slave: 1
+      address: 5
+
+    - name: "Apollo Heat Pump Status - Low Wind (D02)"
+      unique_id: "apollo.status.low_wind_d02"
+      scan_interval: 15
+      input_type: discrete_input
+      slave: 1
+      address: 6
+
+    - name: "Apollo Heat Pump Status - Three Way Valve (D05)"
+      unique_id: "apollo.status.3way_d05"
+      scan_interval: 15
+      input_type: discrete_input
+      slave: 1
+      address: 9
+
+  # ###############################################
+  # Input registers - 16 bit, read only - 3XXXX
+  # ###############################################
+  #
+  # (None)
+  #
+
+  # ###############################################
+  # Holding registers, 16 bit, read/write - 4XXXX
+  # ###############################################
+  sensors:
+    #
+    # Heating Setpoint
+    #
+    - name: "Apollo Heat Pump Working Mode"
+      unique_id: "apollo.value.working_mode"
+      scale: 1
+      data_type: uint16
+      scan_interval: 300
+      input_type: holding
+      slave: 1
+      address: 0
+    #
+    # Heating Setpoint
+    #
+    - name: "Apollo Heat Pump Heating Setpoint"
+      unique_id: "apollo.value.heating_setpoint"
+      scale: 0.1
+      precision: 1
+      device_class: temperature
+      unit_of_measurement: "°C"
+      scan_interval: 300
+      input_type: holding
+      slave: 1
+      address: 1
+      #
+      # Heating Setpoint (F)
+      #
+    - name: "Apollo Heat Pump Heating Setpoint (F)"
+      unique_id: "apollo.value.heating_setpoint_f"
+      scale: 0.1
+      precision: 1
+      device_class: temperature
+      unit_of_measurement: "°F"
+      scan_interval: 300
+      input_type: holding
+      slave: 1
+      address: 491
+
+      #
+      # Cooling Setpoint
+      #
+    - name: "Apollo Heat Pump Cooling Setpoint"
+      unique_id: "apollo.value.cooling_setpoint"
+      scale: 0.1
+      precision: 1
+      device_class: temperature
+      unit_of_measurement: "°C"
+      scan_interval: 300
+      input_type: holding
+      slave: 1
+      address: 2
+      #
+      # Cooling Setpoint (F)
+      #
+    - name: "Apollo Heat Pump Cooling Setpoint (F)"
+      unique_id: "apollo.value.cooling_setpoint_f"
+      scale: 0.1
+      precision: 1
+      device_class: temperature
+      unit_of_measurement: "°F"
+      scan_interval: 300
+      input_type: holding
+      slave: 1
+      address: 492
+
+      #
+      # Hot Water Setpoint
+      #
+    - name: "Apollo Heat Pump Hot Water Setpoint"
+      unique_id: "apollo.value.hot_water_setpoint"
+      scale: 0.1
+      precision: 1
+      device_class: temperature
+      unit_of_measurement: "°C"
+      scan_interval: 300
+      input_type: holding
+      slave: 1
+      address: 3
+      #
+      # Hot Water Setpoint (F)
+      #
+    - name: "Apollo Heat Pump Hot Water Setpoint (F)"
+      unique_id: "apollo.value.hot_water_setpoint_f"
+      scale: 0.1
+      precision: 1
+      device_class: temperature
+      unit_of_measurement: "°F"
+      scan_interval: 300
+      input_type: holding
+      slave: 1
+      address: 493
+
+      #
+      # PID setting - P
+      #
+    - name: "Apollo Heat Pump PID - P (Gain)"
+      unique_id: "apollo.value.pid_P_gain"
+      scale: 0.1
+      precision: 1
+      device_class: power_factor
+      scan_interval: 15
+      input_type: holding
+      slave: 1
+      address: 8
+      #
+      # PID setting - I
+      #
+    - name: "Apollo Heat Pump PID - I (sec)"
+      unique_id: "apollo.value.pid_I_sec"
+      scale: 1
+      data_type: uint16
+      scan_interval: 15
+      input_type: holding
+      slave: 1
+      address: 9
+      #
+      # PID setting - D
+      #
+    - name: "Apollo Heat Pump PID - D (sec)"
+      unique_id: "apollo.value.pid_D_sec"
+      scale: 1
+      data_type: uint16
+      scan_interval: 15
+      input_type: holding
+      slave: 1
+      address: 10
+
+      #
+      # Regulation Point - Inlet/Outlet
+      #
+      # Range 0~1, 0 for Inlet, 1 for Outlet
+      # Seems to have no effect in hot water (thermostat) mode
+    - name: "Apollo Heat Pump Regulation Inlet/Outlet"
+      unique_id: "apollo.value.regulation_in_out"
+      data_type: uint16
+      scan_interval: 300
+      input_type: holding
+      slave: 1
+      address: 27
+
+      #
+      # Outlet Temp
+      #
+    - name: "Apollo Heat Pump Outlet_Temp"
+      unique_id: "apollo.value.outlet_temp"
+      scale: 0.1
+      precision: 1
+      device_class: temperature
+      unit_of_measurement: "°F"
+      scan_interval: 15
+      input_type: holding
+      slave: 1
+      address: 189
+
+      #
+      # Return Temp
+      #
+    - name: "Apollo Heat Pump Inlet Temp"
+      unique_id: "apollo.value.inlet_temp"
+      scale: 0.1
+      precision: 1
+      device_class: temperature
+      unit_of_measurement: "°F"
+      scan_interval: 15
+      input_type: holding
+      slave: 1
+      address: 188
+
+      #
+      # Ambient Temp
+      #
+    - name: "Apollo Heat Pump Ambient Temp"
+      unique_id: "apollo.value.ambient_temp"
+      scale: 0.1
+      precision: 1
+      device_class: temperature
+      unit_of_measurement: "°F"
+      scan_interval: 15
+      input_type: holding
+      slave: 1
+      address: 190
+
+      #
+      # Buffer Tank Temp
+      #
+    - name: "Apollo Heat Pump Water Tank Temp"
+      unique_id: "apollo.value.water_tank_temp"
+      scale: 0.1
+      precision: 1
+      device_class: temperature
+      unit_of_measurement: "°F"
+      scan_interval: 15
+      input_type: holding
+      slave: 1
+      address: 195
+
+      #
+      # Refridgerant Suction Temp
+      #
+    - name: "Apollo Heat Pump Suction Temp"
+      unique_id: "apollo.value.suction_temp"
+      scale: 0.1
+      precision: 1
+      device_class: temperature
+      unit_of_measurement: "°F"
+      scan_interval: 15
+      input_type: holding
+      slave: 1
+      address: 192
+
+      #
+      # Refridgerant Exhaust Temp
+      #
+    - name: "Apollo Heat Pump Exhaust Temp"
+      unique_id: "apollo.value.exhaust_temp"
+      scale: 0.1
+      precision: 1
+      device_class: temperature
+      unit_of_measurement: "°F"
+      scan_interval: 15
+      input_type: holding
+      slave: 1
+      address: 191
+
+      #
+      # Refridgerant Low Pressure
+      #
+    - name: "Apollo Heat Pump Low Pressure"
+      unique_id: "apollo.value.low_pressure"
+      scale: 1
+      precision: 1
+      device_class: pressure
+      unit_of_measurement: "kPa"
+      scan_interval: 15
+      input_type: holding
+      slave: 1
+      address: 194
+
+      #
+      # Refridgerant High Pressure
+      #
+    - name: "Apollo Heat Pump High Pressure"
+      unique_id: "apollo.value.high_pressure"
+      scale: 1
+      precision: 1
+      device_class: pressure
+      unit_of_measurement: "kPa"
+      scan_interval: 15
+      input_type: holding
+      slave: 1
+      address: 193
+
+      #
+      # Coil Temp
+      #
+    - name: "Apollo Heat Pump Coil Temp"
+      unique_id: "apollo.value.coil_temp"
+      scale: 0.1
+      precision: 1
+      device_class: temperature
+      unit_of_measurement: "°F"
+      scan_interval: 15
+      input_type: holding
+      slave: 1
+      address: 196
+
+      #
+      # Fan Speed 1
+      #
+    - name: "Apollo Heat Pump Fan 1 Speed"
+      unique_id: "apollo.value.fan_1_speed"
+      scale: 1
+      precision: 1
+      device_class: frequency
+      unit_of_measurement: "Hz"
+      scan_interval: 15
+      input_type: holding
+      slave: 1
+      address: 200
+
+      #
+      # Fan Speed 2
+      #
+    - name: "Apollo Heat Pump Fan 2 Speed"
+      unique_id: "apollo.value.fan_2_speed"
+      scale: 1
+      precision: 1
+      device_class: frequency
+      unit_of_measurement: "Hz"
+      scan_interval: 15
+      input_type: holding
+      slave: 1
+      address: 202
+
+      #
+      # Calculated Required Capacity
+      #
+    - name: "Apollo Heat Pump Required Capacity"
+      unique_id: "apollo.value.required_capacity"
+      scale: 0.1
+      precision: 1
+      device_class: power_factor
+      unit_of_measurement: "%"
+      scan_interval: 15
+      input_type: holding
+      slave: 1
+      address: 203
+
+      #
+      # Actual Capacity
+      #
+    - name: "Apollo Heat Pump Actual Capacity"
+      unique_id: "apollo.value.actual_capacity"
+      scale: 0.1
+      precision: 1
+      device_class: power_factor
+      unit_of_measurement: "%"
+      scan_interval: 15
+      input_type: holding
+      slave: 1
+      address: 204
+
+      #
+      # Actual Speed
+      #
+    - name: "Apollo Heat Pump Actual Speed"
+      unique_id: "apollo.value.actual_speed"
+      scale: 0.1
+      precision: 1
+      device_class: frequency
+      unit_of_measurement: "Hz"
+      scan_interval: 15
+      input_type: holding
+      slave: 1
+      address: 205
+
+      #
+      # Frequency Converter Power
+      #
+    - name: "Apollo Heat Pump System Power"
+      unique_id: "apollo.value.system_power"
+      scale: 0.1
+      precision: 1
+      device_class: power
+      unit_of_measurement: "kW"
+      scan_interval: 15
+      input_type: holding
+      slave: 1
+      address: 333
+
+      #
+      # Frequency Converter Voltage
+      #
+    - name: "Apollo Heat Pump System Voltage"
+      unique_id: "apollo.value.system_voltage"
+      #scale: 0.1
+      data_type: uint16
+      precision: 1
+      device_class: voltage
+      unit_of_measurement: "V"
+      scan_interval: 15
+      input_type: holding
+      slave: 1
+      address: 334
+
+      #
+      # Frequency Converter Current
+      #
+    - name: "Apollo Heat Pump System Current"
+      unique_id: "apollo.value.system_current"
+      scale: 0.1
+      precision: 1
+      device_class: current
+      unit_of_measurement: "A"
+      scan_interval: 15
+      input_type: holding
+      slave: 1
+      address: 335

@@ -1,7 +1,7 @@
 # modbus config for Apollo Air/Water Heat Pump with Carel controller
 - name: Apollo
   type: tcp
-  host: 10.X.X.X <-- Set this to the IP of your EW11 device
+  host: X.X.X.X # <-- Set this to the IP of your EW11 device
   port: 502
   delay: 2
   timeout: 2
